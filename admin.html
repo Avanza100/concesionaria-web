@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel de carga de autos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<header class="top">
+  <div class="wrap header-box">
+    <div class="logo">ADMIN</div>
+    <div class="hero-text">
+      <h1>Panel de carga de vehículos</h1>
+      <p>Agregar, editar y eliminar autos</p>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="card">
+    <h2>Agregar vehículo</h2>
+
+    <input id="marca" placeholder="Marca (ej: Ford)" /><br><br>
+    <input id="modelo" placeholder="Modelo (ej: Focus)" /><br><br>
+    <input id="precio" placeholder="Precio (ej: $11.500.000)" /><br><br>
+
+    <button onclick="addCar()">Guardar vehículo</button>
+  </section>
+
+  <section class="grid" id="adminCars"></section>
+
+</main>
+
+<script src="admin.js"></script>
+</body>
+</html>
