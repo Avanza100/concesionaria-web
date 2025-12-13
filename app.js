@@ -1,10 +1,9 @@
-const WHATSAPP = "5490000000000"; // cambiar por número real
+const WHATSAPP = "5490000000000";
 
-const cars = [
+const stored = JSON.parse(localStorage.getItem("cars"));
+const cars = stored && stored.length ? stored : [
   { marca: "Ford", modelo: "Focus", precio: "$11.500.000" },
-  { marca: "Toyota", modelo: "Corolla", precio: "$18.000.000" },
-  { marca: "Fiat", modelo: "Cronos", precio: "$15.500.000" },
-  { marca: "Volkswagen", modelo: "Gol", precio: "$9.800.000" }
+  { marca: "Toyota", modelo: "Corolla", precio: "$18.000.000" }
 ];
 
 const grid = document.getElementById("carsGrid");
