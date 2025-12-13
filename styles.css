@@ -1,0 +1,54 @@
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#0b0f14;
+  color:#ffffff;
+}
+
+.top{
+  background:#111;
+  padding:15px;
+}
+
+.wrap{
+  max-width:1100px;
+  margin:auto;
+}
+
+.logo{
+  background:#333;
+  padding:10px;
+  border-radius:6px;
+  font-weight:bold;
+  display:inline-block;
+}
+
+.wa{
+  background:#25d366;
+  color:#000;
+  padding:10px 15px;
+  border-radius:6px;
+  text-decoration:none;
+}
+
+.filters{
+  margin:20px 0;
+}
+
+.chips button{
+  margin:5px;
+  padding:8px 12px;
+  cursor:pointer;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
+}
+
+.card{
+  background:#1a1f2b;
+  padding:12px;
+  border-radius:8px;
+}

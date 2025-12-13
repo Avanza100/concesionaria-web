@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Concesionaria | Vehículos disponibles</title>
+  <meta name="description" content="Catálogo de vehículos disponibles. Filtrá por marca y consultá por WhatsApp." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <div class="brand">
+        <div class="logo">AUTO</div>
+        <div>
+          <h1>Concesionaria</h1>
+          <p>Vehículos disponibles • Consultas por WhatsApp</p>
+        </div>
+      </div>
+
+      <a class="wa" href="https://wa.me/5490000000000" target="_blank">
+        WhatsApp
+      </a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="filters">
+      <h2>Filtrar por marca</h2>
+      <div class="chips" id="brandChips"></div>
+    </section>
+
+    <section class="grid" id="carsGrid"></section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap foot-in">
+      <span>© <span id="year"></span> Concesionaria</span>
+      <span>Dirección • Horarios • Teléfono</span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
