@@ -6,25 +6,33 @@ const botonesMarca = document.querySelectorAll(".btn-marca");
 function renderAutos(filtro = "TODOS") {
   grid.innerHTML = "";
 
-  const filtrados =
-    filtro === "TODOS"
-      ? autos
-      : autos.filter(a => a.marca.toUpperCase() === filtro);
+  let lista = autos;
 
-  filtrados.forEach((auto, index) => {
+  if (filtro !== "TODOS") {
+    lista = autos.filter(
+      a => a.marca.toUpperCase() === filtro.toUpperCase()
+    );
+  }
+
+  if (lista.length === 0) {
+    grid.innerHTML = "<p>No hay vehículos cargados</p>";
+    return;
+  }
+
+  lista.forEach(auto => {
     const card = document.createElement("div");
     card.className = "card-auto";
     card.innerHTML = `
       <h3>${auto.marca} ${auto.modelo}</h3>
       <p>Año ${auto.anio}</p>
-      <p>${auto.km.toLocaleString()} km</p>
-      <strong>$${auto.precio.toLocaleString()}</strong>
+      <p>${auto.km} km</p>
+      <strong>$${auto.precio}</strong>
     `;
 
-    card.onclick = () => {
+    card.addEventListener("click", () => {
       localStorage.setItem("autoSeleccionado", JSON.stringify(auto));
       window.location.href = "detalle.html";
-    };
+    });
 
     grid.appendChild(card);
   });
