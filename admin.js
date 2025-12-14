@@ -1,7 +1,14 @@
 const STORAGE_KEY = "cars";
 
+const marcaInput = document.getElementById("marca");
+const modeloInput = document.getElementById("modelo");
+const anioInput = document.getElementById("anio");
+const kmInput = document.getElementById("km");
+const precioInput = document.getElementById("precio");
+const fotoInput = document.getElementById("foto");
+
 const form = document.getElementById("carForm");
-const lista = document.getElementById("listaAutos");
+const list = document.getElementById("carsList");
 
 function getCars() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
@@ -11,42 +18,59 @@ function saveCars(cars) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(cars));
 }
 
-function renderLista() {
+function renderCars() {
   const cars = getCars();
-  lista.innerHTML = "";
+  list.innerHTML = "";
 
   if (cars.length === 0) {
-    lista.innerHTML = "<p>No hay autos cargados</p>";
+    list.innerHTML = "<p>No hay autos cargados</p>";
     return;
   }
 
-  cars.forEach((c, i) => {
-    lista.innerHTML += `
-      <div>
-        ${c.marca} ${c.modelo} (${c.anio}) - ${c.km} km
-        <button onclick="removeCar(${i})">❌</button>
-      </div>
+  cars.forEach(car => {
+    const item = document.createElement("div");
+    item.innerHTML = `
+      <strong>${car.marca} ${car.modelo}</strong>
+      (${car.anio}) - ${car.km} km
+      <button data-id="${car.id}">❌</button>
     `;
+
+    item.querySelector("button").onclick = () => {
+      deleteCar(car.id);
+    };
+
+    list.appendChild(item);
   });
 }
 
-function removeCar(index) {
-  const cars = getCars();
-  cars.splice(index, 1);
+function deleteCar(id) {
+  const cars = getCars().filter(c => c.id !== id);
   saveCars(cars);
-  renderLista();
+  renderCars();
 }
 
 form.addEventListener("submit", e => {
   e.preventDefault();
 
+  if (
+    !marcaInput.value ||
+    !modeloInput.value ||
+    !anioInput.value ||
+    !kmInput.value ||
+    !precioInput.value
+  ) {
+    alert("Completá todos los campos obligatorios");
+    return;
+  }
+
   const car = {
-    marca: marca.value,
-    modelo: modelo.value,
-    anio: anio.value,
-    km: km.value,
-    precio: precio.value,
-    foto: foto.value || ""
+    id: Date.now(),
+    marca: marcaInput.value.trim(),
+    modelo: modeloInput.value.trim(),
+    anio: anioInput.value.trim(),
+    km: kmInput.value.trim(),
+    precio: precioInput.value.trim(),
+    foto: fotoInput.value.trim() || ""
   };
 
   const cars = getCars();
@@ -54,7 +78,8 @@ form.addEventListener("submit", e => {
   saveCars(cars);
 
   form.reset();
-  renderLista();
+  renderCars();
 });
 
-renderLista();
+// INIT
+renderCars();
