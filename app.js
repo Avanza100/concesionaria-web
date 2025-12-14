@@ -1,51 +1,51 @@
-const STORAGE_KEY = "autos_concesionaria";
+const STORAGE_KEY = "cars";
 
-function getAutos() {
+const grid = document.getElementById("carsGrid");
+const brandChips = document.getElementById("brandChips");
+
+function getCars() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 }
 
-function saveAutos(autos) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(autos));
-}
+function renderBrands(cars) {
+  const brands = ["TODOS", ...new Set(cars.map(c => c.marca.toUpperCase()))];
+  brandChips.innerHTML = "";
 
-function renderAutos(filtro = "TODOS") {
-  const grid = document.getElementById("carsGrid");
-  const autos = getAutos();
-
-  grid.innerHTML = "";
-
-  autos
-    .filter(a => filtro === "TODOS" || a.marca === filtro)
-    .forEach(auto => {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <h3>${auto.marca} ${auto.modelo}</h3>
-        <p>Año ${auto.anio} · ${auto.km} km</p>
-        <strong>${auto.precio}</strong>
-      `;
-      card.onclick = () => {
-        window.location.href = `detalle.html?id=${auto.id}`;
-      };
-      grid.appendChild(card);
-    });
-}
-
-function renderMarcas() {
-  const cont = document.getElementById("brandChips");
-  const autos = getAutos();
-  const marcas = ["TODOS", ...new Set(autos.map(a => a.marca))];
-
-  cont.innerHTML = "";
-  marcas.forEach(m => {
+  brands.forEach(brand => {
     const btn = document.createElement("button");
-    btn.textContent = m;
-    btn.onclick = () => renderAutos(m);
-    cont.appendChild(btn);
+    btn.className = "chip";
+    btn.textContent = brand;
+    btn.onclick = () => renderCars(brand === "TODOS" ? cars : cars.filter(c => c.marca.toUpperCase() === brand));
+    brandChips.appendChild(btn);
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  renderMarcas();
-  renderAutos();
-});
+function renderCars(cars) {
+  grid.innerHTML = "";
+
+  if (cars.length === 0) {
+    grid.innerHTML = "<p>No hay vehículos cargados</p>";
+    return;
+  }
+
+  cars.forEach(car => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.onclick = () => {
+      window.location.href = `detalle.html?id=${car.id}`;
+    };
+
+    card.innerHTML = `
+      <h3>${car.marca} ${car.modelo}</h3>
+      <p>Año ${car.anio} · ${car.km} km</p>
+      <strong>${car.precio}</strong>
+    `;
+
+    grid.appendChild(card);
+  });
+}
+
+// Init
+const cars = getCars();
+renderBrands(cars);
+renderCars(cars);
