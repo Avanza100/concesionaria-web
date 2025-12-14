@@ -1,70 +1,39 @@
-const STORAGE_KEY = "cars";
+const STORAGE_KEY = "autos_concesionaria";
 
-function getCars() {
-  const cars = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-
-  // MIGRACIÓN: si no tienen id, se lo agregamos y re-guardamos
-  let changed = false;
-  cars.forEach((c, i) => {
-    if (c.id === undefined || c.id === null || c.id === "") {
-      c.id = Date.now() + i; // id único
-      changed = true;
-    }
-  });
-
-  if (changed) localStorage.setItem(STORAGE_KEY, JSON.stringify(cars));
-
-  return cars;
+function getAutoById(id) {
+  const autos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  return autos.find(a => a.id === id);
 }
 
-function esc(s) {
-  return String(s ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
+function getIdFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("id");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const container = document.getElementById("detalle");
-  if (!container) return;
+  const cont = document.getElementById("detalle");
+  const id = getIdFromURL();
 
-  const params = new URLSearchParams(window.location.search);
-  const idParam = params.get("id");
-
-  const cars = getCars();
-
-  // Si id viene como string, lo comparamos en ambos formatos (number/string)
-  const car = cars.find(c => String(c.id) === String(idParam));
-
-  if (!car) {
-    container.innerHTML = `
-      <h2>No se encontró el vehículo</h2>
-      <p>Probá volver y tocar el auto de nuevo.</p>
-      <a href="index.html">⬅ Volver</a>
-    `;
+  if (!id) {
+    cont.innerHTML = "<p>No se recibió ID del vehículo.</p>";
     return;
   }
 
-  const waText = encodeURIComponent(
-    `Hola, me interesa el ${car.marca} ${car.modelo} (${car.anio}). Precio: ${car.precio}.`
-  );
+  const auto = getAutoById(id);
 
-  container.innerHTML = `
-    <h1>${esc(car.marca)} ${esc(car.modelo)}</h1>
+  if (!auto) {
+    cont.innerHTML = "<p>No se encontró el vehículo.</p>";
+    return;
+  }
 
-    ${car.foto ? `<img src="${esc(car.foto)}" alt="Foto" style="max-width:520px;width:100%;border-radius:14px;margin:14px 0;">` : ""}
-
-    <p><strong>Año:</strong> ${esc(car.anio)}</p>
-    <p><strong>Kilómetros:</strong> ${esc(car.km)} km</p>
-    <p><strong>Precio:</strong> ${esc(car.precio)}</p>
-
-    <a href="https://wa.me/5490000000000?text=${waText}" target="_blank" style="display:inline-block;margin-top:14px;">
-      Consultar por WhatsApp
+  cont.innerHTML = `
+    <h2>${auto.marca} ${auto.modelo}</h2>
+    <p><strong>Año:</strong> ${auto.anio}</p>
+    <p><strong>Kilómetros:</strong> ${auto.km}</p>
+    <p><strong>Precio:</strong> ${auto.precio}</p>
+    <a class="wa-main" target="_blank"
+       href="https://wa.me/5490000000000?text=Hola,%20me%20interesa%20el%20${auto.marca}%20${auto.modelo}">
+       Consultar por WhatsApp
     </a>
-
-    <div style="margin-top:18px;">
-      <a href="index.html">⬅ Volver</a>
-    </div>
   `;
 });
