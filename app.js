@@ -34,16 +34,8 @@ function renderCars(brand) {
   }
 
   list.forEach(c => {
-    const url =
-      "detalle.html?marca=" + encodeURIComponent(c.marca) +
-      "&modelo=" + encodeURIComponent(c.modelo) +
-      "&anio=" + encodeURIComponent(c.anio) +
-      "&km=" + encodeURIComponent(c.km) +
-      "&precio=" + encodeURIComponent(c.precio) +
-      "&foto=" + encodeURIComponent(c.foto);
-
     grid.innerHTML += `
-      <div class="card" onclick="location.href='${url}'">
+      <div class="card" onclick="location.href='detalle.html?id=${c.id}'">
         ${c.foto ? `<img src="${c.foto}">` : ""}
         <h3>${c.marca} ${c.modelo}</h3>
         <p>Año ${c.anio} • ${c.km} km</p>
