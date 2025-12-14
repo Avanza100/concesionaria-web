@@ -24,6 +24,21 @@ function saveCars(cars) {
 }
 
 // =======================
+// CONVERTIR ARCHIVOS A BASE64
+// =======================
+function filesToBase64(files) {
+  return Promise.all(
+    [...files].map(file => {
+      return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.readAsDataURL(file);
+      });
+    })
+  );
+}
+
+// =======================
 // RENDER PANEL
 // =======================
 function renderCars() {
@@ -36,13 +51,13 @@ function renderCars() {
   }
 
   cars.forEach(car => {
-    const div = document.createElement("div");
-    div.style.marginBottom = "14px";
-
     const thumbs = (car.fotos || [])
       .slice(0, 3)
       .map(f => `<img src="${f}" style="width:60px;border-radius:6px;margin-right:4px">`)
       .join("");
+
+    const div = document.createElement("div");
+    div.style.marginBottom = "14px";
 
     div.innerHTML = `
       <strong>${car.marca} ${car.modelo}</strong>
@@ -61,18 +76,14 @@ function renderCars() {
 // =======================
 // GUARDAR / EDITAR
 // =======================
-form.addEventListener("submit", e => {
+form.addEventListener("submit", async e => {
   e.preventDefault();
 
   const cars = getCars();
-
-  const fotosArray = fotosInput.value
-    .split(",")
-    .map(f => f.trim())
-    .filter(Boolean);
+  const fotosBase64 = await filesToBase64(fotosInput.files);
 
   if (editingId) {
-    const i = cars.findIndex(c => c.id === editingId);
+    const i = cars.findIndex(c => String(c.id) === String(editingId));
     if (i !== -1) {
       cars[i] = {
         ...cars[i],
@@ -81,7 +92,7 @@ form.addEventListener("submit", e => {
         anio: anioInput.value,
         km: kmInput.value,
         precio: precioInput.value,
-        fotos: fotosArray
+        fotos: fotosBase64.length ? fotosBase64 : cars[i].fotos
       };
     }
     editingId = null;
@@ -93,7 +104,7 @@ form.addEventListener("submit", e => {
       anio: anioInput.value,
       km: kmInput.value,
       precio: precioInput.value,
-      fotos: fotosArray
+      fotos: fotosBase64
     });
   }
 
@@ -105,8 +116,8 @@ form.addEventListener("submit", e => {
 // =======================
 // EDITAR
 // =======================
-window.editCar = id => {
-  const car = getCars().find(c => c.id === id);
+window.editCar = function (id) {
+  const car = getCars().find(c => String(c.id) === String(id));
   if (!car) return;
 
   marcaInput.value = car.marca;
@@ -114,13 +125,12 @@ window.editCar = id => {
   anioInput.value = car.anio;
   kmInput.value = car.km;
   precioInput.value = car.precio;
-  fotosInput.value = (car.fotos || []).join(", ");
 
   editingId = id;
 };
 
 // =======================
-// ELIMINAR
+// ELIMINAR (FIX DEFINITIVO)
 // =======================
 window.deleteCar = function (id) {
   if (!confirm("¿Seguro que querés eliminar este vehículo?")) return;
@@ -131,7 +141,6 @@ window.deleteCar = function (id) {
   saveCars(cars);
   renderCars();
 };
-
 
 // =======================
 renderCars();
