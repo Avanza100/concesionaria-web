@@ -1,5 +1,33 @@
+// CREDENCIALES (cambiar luego)
+const USER = "admin";
+const PASS = "1234";
+
+const loginBox = document.getElementById("loginBox");
+const panel = document.getElementById("panel");
 const grid = document.getElementById("adminCars");
 
+// LOGIN
+function login() {
+  const u = document.getElementById("user").value;
+  const p = document.getElementById("pass").value;
+
+  if (u === USER && p === PASS) {
+    localStorage.setItem("adminAuth", "ok");
+    loginBox.style.display = "none";
+    panel.style.display = "block";
+    render();
+  } else {
+    alert("Usuario o contraseña incorrectos");
+  }
+}
+
+// AUTO LOGIN
+if (localStorage.getItem("adminAuth") === "ok") {
+  loginBox.style.display = "none";
+  panel.style.display = "block";
+}
+
+// AUTOS
 function getCars() {
   return JSON.parse(localStorage.getItem("cars")) || [];
 }
@@ -14,7 +42,7 @@ function addCar() {
   const precio = document.getElementById("precio").value;
 
   if (!marca || !modelo || !precio) {
-    alert("Completa todos los campos");
+    alert("Completá todos los campos");
     return;
   }
 
@@ -50,5 +78,3 @@ function render() {
     `;
   });
 }
-
-render();
