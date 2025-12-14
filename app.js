@@ -59,7 +59,29 @@ function renderAutos() {
 
 init();
 document.addEventListener("click", e => {
-  if (!e.target.closest(".carousel button")) return;
+const zoomOverlay = document.getElementById("zoomOverlay");
+const zoomImg = document.getElementById("zoomImg");
+const zoomClose = document.getElementById("zoomClose");
+
+// Abrir zoom en cualquier imagen de auto
+document.addEventListener("click", e => {
+  if (e.target.tagName === "IMG" && e.target.dataset.zoom === "true") {
+    zoomImg.src = e.target.src;
+    zoomOverlay.style.display = "flex";
+  }
+});
+
+// Cerrar zoom
+zoomClose.addEventListener("click", () => {
+  zoomOverlay.style.display = "none";
+});
+
+zoomOverlay.addEventListener("click", e => {
+  if (e.target === zoomOverlay) {
+    zoomOverlay.style.display = "none";
+  }
+});
+
 
   const btn = e.target;
   const carousel = btn.closest(".carousel");
@@ -99,4 +121,5 @@ zoomOverlay.addEventListener("click", e => {
     zoomOverlay.style.display = "none";
   }
 });
+
 
