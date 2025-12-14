@@ -1,9 +1,13 @@
 const WHATSAPP = "5490000000000";
 
-// LEER AUTOS DESDE EL PANEL
+// CONTENEDORES
+const grid = document.getElementById("carsGrid");
+const chips = document.getElementById("brandChips");
+
+// LEER AUTOS DESDE EL PANEL (localStorage)
 const storedCars = JSON.parse(localStorage.getItem("cars")) || [];
 
-// SI NO HAY AUTOS CARGADOS, MOSTRAR EJEMPLOS
+// AUTOS DE EJEMPLO SI NO HAY CARGADOS
 const cars = storedCars.length ? storedCars : [
   {
     marca: "Ford",
@@ -16,56 +20,56 @@ const cars = storedCars.length ? storedCars : [
     modelo: "Corolla",
     precio: "$18.000.000",
     foto: "https://images.unsplash.com/photo-1542362567-b07e54358753?auto=format&fit=crop&w=900&q=60"
+  },
+  {
+    marca: "Fiat",
+    modelo: "Cronos",
+    precio: "$15.500.000",
+    foto: "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=900&q=60"
   }
 ];
 
-const grid = document.getElementById("carsGrid");
-const chips = document.getElementById("brandChips");
-
 // OBTENER MARCAS ÚNICAS
 const marcasUnicas = [...new Set(cars.map(c => c.marca))];
-
-// CREAR BOTONES
 const marcas = ["Todos", ...marcasUnicas];
 
+// CREAR BOTONES DE FILTRO
 chips.innerHTML = "";
 marcas.forEach(marca => {
   const btn = document.createElement("button");
   btn.textContent = marca.toUpperCase();
-  btn.onclick = () => render(marca);
+  btn.onclick = () => renderCars(marca);
   chips.appendChild(btn);
 });
 
-// RENDERIZAR AUTOS SEGÚN MARCA
-function render(marcaSeleccionada) {
+// FUNCIÓN PRINCIPAL DE RENDER
+function renderCars(marcaSeleccionada) {
   grid.innerHTML = "";
 
   const filtrados = marcaSeleccionada === "Todos"
     ? cars
     : cars.filter(c => c.marca === marcaSeleccionada);
 
-  filtrados.forEach(c => {
-    const msg = encodeURIComponent(
-      `Hola, me interesa el ${c.marca} ${c.modelo}. ¿Sigue disponible?`
-    );
+  if (!filtrados.length) {
+    grid.innerHTML = "<p>No hay vehículos para esta marca.</p>";
+    return;
+  }
 
+  filtrados.forEach(c => {
     grid.innerHTML += `
-      <div class="card">
-        <img src="${c.foto}" style="width:100%;border-radius:8px;margin-bottom:10px">
+      <div class="card" onclick="
+        location.href='detalle.html?marca=${encodeURIComponent(c.marca)}
+        &modelo=${encodeURIComponent(c.modelo)}
+        &precio=${encodeURIComponent(c.precio)}
+        &foto=${encodeURIComponent(c.foto)}'
+      ">
+        <img src="${c.foto}" alt="${c.marca}">
         <h3>${c.marca} ${c.modelo}</h3>
-        <p>Excelente estado • Listo para transferir</p>
-        <strong>${c.precio}</strong><br>
-        <a class="wa-card" href="https://wa.me/${WHATSAPP}?text=${msg}" target="_blank">
-          Consultar
-        </a>
+        <strong>${c.precio}</strong>
       </div>
     `;
   });
-
-  if (!filtrados.length) {
-    grid.innerHTML = `<p>No hay vehículos para esta marca.</p>`;
-  }
 }
 
-// MOSTRAR TODO AL INICIO
-render("Todos");
+// MOSTRAR TODO AL CARGAR
+renderCars("Todos");
