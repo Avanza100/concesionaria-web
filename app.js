@@ -1,34 +1,33 @@
 const STORAGE_KEY = "cars";
 
 const grid = document.getElementById("carsGrid");
-const brandChips = document.getElementById("brandChips");
+const chips = document.getElementById("brandChips");
 
 function getCars() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 }
 
 function renderBrands(cars) {
-  const brands = ["TODOS", ...new Set(cars.map(c => c.marca.toUpperCase()))];
-  brandChips.innerHTML = "";
+  const brands = ["TODOS", ...new Set(cars.map(c => c.marca))];
+  chips.innerHTML = "";
 
   brands.forEach(brand => {
     const btn = document.createElement("button");
-    btn.className = "chip";
     btn.textContent = brand;
-    btn.onclick = () => renderCars(brand === "TODOS" ? cars : cars.filter(c => c.marca.toUpperCase() === brand));
-    brandChips.appendChild(btn);
+    btn.onclick = () => renderCars(brand);
+    chips.appendChild(btn);
   });
 }
 
-function renderCars(cars) {
+function renderCars(filter = "TODOS") {
+  const cars = getCars();
   grid.innerHTML = "";
 
-  if (cars.length === 0) {
-    grid.innerHTML = "<p>No hay vehículos cargados</p>";
-    return;
-  }
+  const filtered = filter === "TODOS"
+    ? cars
+    : cars.filter(c => c.marca === filter);
 
-  cars.forEach(car => {
+  filtered.forEach(car => {
     const card = document.createElement("div");
     card.className = "card";
     card.onclick = () => {
@@ -45,7 +44,6 @@ function renderCars(cars) {
   });
 }
 
-// Init
 const cars = getCars();
 renderBrands(cars);
-renderCars(cars);
+renderCars();
