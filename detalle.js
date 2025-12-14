@@ -1,5 +1,5 @@
 const STORAGE_KEY = "cars";
-const WHATSAPP_NUMBER = "543755307174"; // 👈 CAMBIÁ ESTE NÚMERO
+const WHATSAPP_NUMBER = const phone = "543755541075"; // 👈 CAMBIÁ ESTE NÚMERO
 
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
