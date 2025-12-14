@@ -123,5 +123,29 @@ zoomOverlay.addEventListener("click", e => {
   }
 });
 
+const zoomOverlay = document.getElementById("zoomOverlay");
+const zoomImg = document.getElementById("zoomImg");
+const zoomClose = document.getElementById("zoomClose");
+
+// Abrir zoom al hacer click en CUALQUIER imagen de auto
+document.addEventListener("click", function (e) {
+  if (e.target.tagName === "IMG" && e.target.closest(".card")) {
+    zoomImg.src = e.target.src;
+    zoomOverlay.style.display = "flex";
+  }
+});
+
+// Cerrar zoom
+zoomClose.addEventListener("click", function () {
+  zoomOverlay.style.display = "none";
+});
+
+// Cerrar tocando fondo
+zoomOverlay.addEventListener("click", function (e) {
+  if (e.target === zoomOverlay) {
+    zoomOverlay.style.display = "none";
+  }
+});
+
 
 
