@@ -1,81 +1,59 @@
-// ===============================
-// CONFIG
-// ===============================
-const STORAGE_KEY = "autos";
+const STORAGE_KEY = "cars";
 
-// ===============================
-// UTILS
-// ===============================
-function getAutos() {
+const grid = document.getElementById("carsGrid");
+const chips = document.getElementById("brandChips");
+
+function getCars() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 }
 
-function saveAutos(autos) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(autos));
-}
+function renderBrands(cars) {
+  chips.innerHTML = "";
 
-// ===============================
-// RENDER MARCAS
-// ===============================
-function renderBrands(autos) {
-  const brandChips = document.getElementById("brandChips");
-  if (!brandChips) return;
+  const brands = ["Todos", ...new Set(cars.map(c => c.marca))];
 
-  const brands = ["TODOS", ...new Set(autos.map(a => a.marca.toUpperCase()))];
-
-  brandChips.innerHTML = "";
-  brands.forEach(brand => {
+  brands.forEach(b => {
     const btn = document.createElement("button");
-    btn.className = "chip";
-    btn.textContent = brand;
-    btn.onclick = () => renderCars(brand === "TODOS" ? autos : autos.filter(a => a.marca.toUpperCase() === brand));
-    brandChips.appendChild(btn);
+    btn.textContent = b.toUpperCase();
+    btn.onclick = () => renderCars(b);
+    chips.appendChild(btn);
   });
 }
 
-// ===============================
-// RENDER AUTOS
-// ===============================
-function renderCars(autos) {
-  const grid = document.getElementById("carsGrid");
-  if (!grid) return;
-
+function renderCars(brand) {
+  const cars = getCars();
   grid.innerHTML = "";
 
-  if (autos.length === 0) {
+  const list = brand === "Todos"
+    ? cars
+    : cars.filter(c => c.marca === brand);
+
+  if (list.length === 0) {
     grid.innerHTML = "<p>No hay vehículos cargados</p>";
     return;
   }
 
-  autos.forEach((auto, index) => {
-    const card = document.createElement("div");
-    card.className = "card";
+  list.forEach(c => {
+    const url =
+      "detalle.html?marca=" + encodeURIComponent(c.marca) +
+      "&modelo=" + encodeURIComponent(c.modelo) +
+      "&anio=" + encodeURIComponent(c.anio) +
+      "&km=" + encodeURIComponent(c.km) +
+      "&precio=" + encodeURIComponent(c.precio) +
+      "&foto=" + encodeURIComponent(c.foto);
 
-    card.innerHTML = `
-      <h3>${auto.marca} ${auto.modelo}</h3>
-      <p><strong>Año:</strong> ${auto.anio}</p>
-      <p><strong>Kilómetros:</strong> ${auto.km} km</p>
-      <p><strong>Precio:</strong> $${auto.precio}</p>
-      <button onclick="goToDetail(${index})">Ver detalle</button>
+    grid.innerHTML += `
+      <div class="card" onclick="location.href='${url}'">
+        ${c.foto ? `<img src="${c.foto}">` : ""}
+        <h3>${c.marca} ${c.modelo}</h3>
+        <p>Año ${c.anio} • ${c.km} km</p>
+        <strong>${c.precio}</strong>
+      </div>
     `;
-
-    grid.appendChild(card);
   });
 }
 
-// ===============================
-// DETALLE
-// ===============================
-window.goToDetail = function (index) {
-  localStorage.setItem("autoSeleccionado", index);
-  window.location.href = "detalle.html";
-};
-
-// ===============================
 // INIT
-// ===============================
-document.addEventListener("DOMContentLoaded", () => {
-  const autos = getAutos();
-  renderBrands(autos);
-  renderCars(autos);
-});
+const cars = getCars();
+renderBrands(cars);
+renderCars("Todos");
