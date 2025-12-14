@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const autos = JSON.parse(localStorage.getItem("autos")) || [];
 
-  const grid = document.getElementById("autosGrid");
+const grid = document.getElementById("carsGrid");
 
   if (!grid) {
     alert("ERROR: No existe el contenedor autosGrid en index.html");
@@ -60,3 +60,4 @@ document.addEventListener("DOMContentLoaded", () => {
   // CARGA INICIAL
   renderAutos();
 });
+
