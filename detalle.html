@@ -1,33 +1,74 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Detalle del vehículo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    .detalle-wrap {
+      max-width: 900px;
+      margin: 40px auto;
+      background: #1f2a44;
+      padding: 30px;
+      border-radius: 12px;
+      color: #fff;
+    }
+
+    .detalle-wrap h2 {
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .detalle-wrap p {
+      margin: 6px 0;
+      font-size: 16px;
+    }
+
+    .detalle-wrap img {
+      margin-top: 15px;
+      max-width: 100%;
+      border-radius: 10px;
+    }
+
+    .btn-volver {
+      display: inline-block;
+      margin-bottom: 20px;
+      background: #22c55e;
+      color: #000;
+      padding: 8px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .no-car {
+      text-align: center;
+      padding: 40px;
+      font-size: 18px;
+      opacity: 0.9;
+    }
+  </style>
 </head>
+
 <body>
 
-  <header class="hero">
-    <div class="wrap hero-inner">
-      <h1>Detalle del vehículo</h1>
-      <a href="index.html" class="wa-main">⬅ Volver</a>
-    </div>
-  </header>
+  <main class="detalle-wrap">
 
-  <main class="wrap">
-    <!-- ACÁ SE INYECTA TODO CON JS -->
-    <div id="detalle"></div>
+    <a href="index.html" class="btn-volver">← Volver</a>
+
+    <!-- ACÁ SE INYECTA EL AUTO -->
+    <div id="detalle">
+      <div class="no-car">Cargando vehículo…</div>
+    </div>
+
   </main>
 
-  <footer class="foot">
-    <div class="wrap footer-box">
-      <span>© Concesionaria Oficial</span>
-      <span>Atención personalizada · Garantía · Asesoramiento</span>
-    </div>
-  </footer>
-
-  <!-- MUY IMPORTANTE -->
+  <!-- SCRIPT DEL DETALLE -->
   <script src="detalle.js"></script>
+
 </body>
 </html>
