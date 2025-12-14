@@ -1,76 +1,98 @@
-import { db, storage } from "./firebase.js";
-import {
-  collection,
-  addDoc,
-  getDocs,
-  deleteDoc,
-  doc
-} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+const STORAGE_KEY = "cars";
 
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-storage.js";
+const form = document.getElementById("carForm");
+const list = document.getElementById("carsList");
+const fotosInput = document.getElementById("fotos");
 
-const form = document.querySelector("form");
-const lista = document.getElementById("carsList");
+function getCars() {
+  return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+}
 
-async function cargarAutos() {
-  lista.innerHTML = "";
+function saveCars(cars) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(cars));
+}
 
-  const querySnapshot = await getDocs(collection(db, "vehiculos"));
-  querySnapshot.forEach((docu) => {
-    const auto = docu.data();
+function renderCars() {
+  const cars = getCars();
+  list.innerHTML = "";
 
+  cars.forEach((car, index) => {
     const div = document.createElement("div");
+    div.className = "admin-car";
+
     div.innerHTML = `
-      <strong>${auto.marca} ${auto.modelo}</strong><br>
-      Año: ${auto.anio} | KM: ${auto.km} | $${auto.precio}<br>
-      <button data-id="${docu.id}">Eliminar</button>
+      <strong>${car.marca} ${car.modelo}</strong><br>
+      Año: ${car.anio} | Km: ${car.km} | $${car.precio}<br>
+      Fotos: ${car.fotos.length}<br><br>
+      <button onclick="editCar(${index})">Editar</button>
+      <button onclick="deleteCar(${index})">Eliminar</button>
       <hr>
     `;
 
-    div.querySelector("button").onclick = async () => {
-      if (confirm("¿Eliminar vehículo?")) {
-        await deleteDoc(doc(db, "vehiculos", docu.id));
-        cargarAutos();
-      }
-    };
-
-    lista.appendChild(div);
+    list.appendChild(div);
   });
+}
+
+function readFilesAsBase64(files) {
+  return Promise.all(
+    [...files].map(file => {
+      return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.readAsDataURL(file);
+      });
+    })
+  );
 }
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const marca = document.getElementById("marca").value;
-  const modelo = document.getElementById("modelo").value;
-  const anio = document.getElementById("anio").value;
-  const km = document.getElementById("km").value;
-  const precio = document.getElementById("precio").value;
-  const fotoFile = document.getElementById("foto").files[0];
+  const cars = getCars();
+  const id = document.getElementById("carId").value;
 
-  let fotoURL = "";
+  const carData = {
+    marca: document.getElementById("marca").value,
+    modelo: document.getElementById("modelo").value,
+    anio: document.getElementById("anio").value,
+    km: document.getElementById("km").value,
+    precio: document.getElementById("precio").value,
+    fotos: []
+  };
 
-  if (fotoFile) {
-    const storageRef = ref(storage, `autos/${Date.now()}-${fotoFile.name}`);
-    await uploadBytes(storageRef, fotoFile);
-    fotoURL = await getDownloadURL(storageRef);
+  if (fotosInput.files.length > 0) {
+    carData.fotos = await readFilesAsBase64(fotosInput.files);
   }
 
-  await addDoc(collection(db, "vehiculos"), {
-    marca,
-    modelo,
-    anio,
-    km,
-    precio,
-    fotoURL
-  });
+  if (id) {
+    cars[id] = carData;
+  } else {
+    cars.push(carData);
+  }
 
+  saveCars(cars);
   form.reset();
-  cargarAutos();
+  document.getElementById("carId").value = "";
+  renderCars();
 });
 
-cargarAutos();
+window.editCar = function(index) {
+  const car = getCars()[index];
+
+  document.getElementById("carId").value = index;
+  document.getElementById("marca").value = car.marca;
+  document.getElementById("modelo").value = car.modelo;
+  document.getElementById("anio").value = car.anio;
+  document.getElementById("km").value = car.km;
+  document.getElementById("precio").value = car.precio;
+};
+
+window.deleteCar = function(index) {
+  if (!confirm("¿Eliminar este vehículo?")) return;
+  const cars = getCars();
+  cars.splice(index, 1);
+  saveCars(cars);
+  renderCars();
+};
+
+renderCars();
