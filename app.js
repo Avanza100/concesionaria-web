@@ -1,57 +1,43 @@
-// CONTENEDORES
 const grid = document.getElementById("carsGrid");
 const chips = document.getElementById("brandChips");
 
-// LEER AUTOS DEL PANEL
-const storedCars = JSON.parse(localStorage.getItem("cars")) || [];
+const cars = JSON.parse(localStorage.getItem("cars")) || [];
 
-// AUTOS DE EJEMPLO
-const cars = storedCars.length ? storedCars : [
-  {
-    marca: "Ford",
-    modelo: "Fiesta",
-    precio: "14.000.000",
-    foto: "https://images.unsplash.com/photo-1525609004556-c46c7d6cf023"
-  }
-];
+const marcas = ["Todos", ...new Set(cars.map(c => c.marca))];
 
-// MARCAS
-const marcasUnicas = [...new Set(cars.map(c => c.marca))];
-const marcas = ["Todos", ...marcasUnicas];
-
-// BOTONES DE MARCA
 chips.innerHTML = "";
-marcas.forEach(marca => {
-  const btn = document.createElement("button");
-  btn.textContent = marca.toUpperCase();
-  btn.onclick = () => renderCars(marca);
-  chips.appendChild(btn);
+marcas.forEach(m => {
+  const b = document.createElement("button");
+  b.textContent = m.toUpperCase();
+  b.onclick = () => render(m);
+  chips.appendChild(b);
 });
 
-// RENDER
-function renderCars(marcaSeleccionada) {
+function render(marca) {
   grid.innerHTML = "";
 
-  const filtrados = marcaSeleccionada === "Todos"
+  const filtrados = marca === "Todos"
     ? cars
-    : cars.filter(c => c.marca === marcaSeleccionada);
+    : cars.filter(c => c.marca === marca);
 
   filtrados.forEach(c => {
     const url =
       "detalle.html?marca=" + encodeURIComponent(c.marca) +
       "&modelo=" + encodeURIComponent(c.modelo) +
+      "&anio=" + encodeURIComponent(c.anio) +
+      "&km=" + encodeURIComponent(c.km) +
       "&precio=" + encodeURIComponent(c.precio) +
       "&foto=" + encodeURIComponent(c.foto);
 
     grid.innerHTML += `
-      <div class="card" onclick="window.location.href='${url}'">
+      <div class="card" onclick="location.href='${url}'">
         <img src="${c.foto}">
         <h3>${c.marca} ${c.modelo}</h3>
+        <p>Año ${c.anio} • ${c.km} km</p>
         <strong>${c.precio}</strong>
       </div>
     `;
   });
 }
 
-// CARGA INICIAL
-renderCars("Todos");
+render("Todos");
