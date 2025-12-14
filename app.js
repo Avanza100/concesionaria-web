@@ -1,47 +1,62 @@
-const autos = JSON.parse(localStorage.getItem("autos")) || [];
+document.addEventListener("DOMContentLoaded", () => {
+  const autos = JSON.parse(localStorage.getItem("autos")) || [];
 
-const grid = document.getElementById("autosGrid");
-const botonesMarca = document.querySelectorAll(".btn-marca");
+  const grid = document.getElementById("autosGrid");
 
-function renderAutos(filtro = "TODOS") {
-  grid.innerHTML = "";
-
-  let lista = autos;
-
-  if (filtro !== "TODOS") {
-    lista = autos.filter(
-      a => a.marca.toUpperCase() === filtro.toUpperCase()
-    );
-  }
-
-  if (lista.length === 0) {
-    grid.innerHTML = "<p>No hay vehículos cargados</p>";
+  if (!grid) {
+    alert("ERROR: No existe el contenedor autosGrid en index.html");
     return;
   }
 
-  lista.forEach(auto => {
-    const card = document.createElement("div");
-    card.className = "card-auto";
-    card.innerHTML = `
-      <h3>${auto.marca} ${auto.modelo}</h3>
-      <p>Año ${auto.anio}</p>
-      <p>${auto.km} km</p>
-      <strong>$${auto.precio}</strong>
-    `;
+  if (autos.length === 0) {
+    grid.innerHTML = "<p>No hay vehículos cargados.</p>";
+    return;
+  }
 
-    card.addEventListener("click", () => {
-      localStorage.setItem("autoSeleccionado", JSON.stringify(auto));
-      window.location.href = "detalle.html";
+  function renderAutos(filtro = "TODOS") {
+    grid.innerHTML = "";
+
+    let lista = autos;
+
+    if (filtro !== "TODOS") {
+      lista = autos.filter(
+        a => a.marca.toUpperCase() === filtro.toUpperCase()
+      );
+    }
+
+    if (lista.length === 0) {
+      grid.innerHTML = "<p>No hay vehículos para esta marca.</p>";
+      return;
+    }
+
+    lista.forEach(auto => {
+      const card = document.createElement("div");
+      card.className = "card-auto";
+      card.style.cursor = "pointer";
+
+      card.innerHTML = `
+        <h3>${auto.marca} ${auto.modelo}</h3>
+        <p>Año: ${auto.anio}</p>
+        <p>Kilómetros: ${auto.km}</p>
+        <strong>$${auto.precio}</strong>
+      `;
+
+      card.onclick = () => {
+        localStorage.setItem("autoSeleccionado", JSON.stringify(auto));
+        window.location.href = "detalle.html";
+      };
+
+      grid.appendChild(card);
     });
+  }
 
-    grid.appendChild(card);
+  // BOTONES DE MARCA
+  document.querySelectorAll("[data-marca]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      renderAutos(btn.dataset.marca);
+    });
   });
-}
 
-botonesMarca.forEach(btn => {
-  btn.addEventListener("click", () => {
-    renderAutos(btn.dataset.marca);
-  });
+  // CARGA INICIAL
+  renderAutos();
 });
-
-renderAutos();
