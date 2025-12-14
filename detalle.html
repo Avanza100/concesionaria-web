@@ -7,19 +7,32 @@
 </head>
 <body>
 
-  <main class="detalle">
-    <img id="foto" src="" alt="Auto">
-    <h1 id="titulo"></h1>
-    <p id="descripcion"></p>
-    <strong id="precio"></strong>
+  <div class="detalle-container" id="detalle"></div>
 
-    <br><br>
+  <script>
+    const auto = JSON.parse(localStorage.getItem("autoSeleccionado"));
+    const contenedor = document.getElementById("detalle");
 
-    <a id="whatsapp" class="wa-card" target="_blank">Consultar por WhatsApp</a>
-    <br><br>
-    <a href="index.html">← Volver</a>
-  </main>
+    if (!auto) {
+      contenedor.innerHTML = "<p>No se encontró el vehículo</p>";
+    } else {
+      contenedor.innerHTML = `
+        <h1>${auto.marca} ${auto.modelo}</h1>
+        <p><strong>Año:</strong> ${auto.anio}</p>
+        <p><strong>Kilómetros:</strong> ${auto.km.toLocaleString()} km</p>
+        <p><strong>Precio:</strong> $${auto.precio.toLocaleString()}</p>
 
-  <script src="detalle.js"></script>
+        <a class="btn-whatsapp" 
+           href="https://wa.me/549XXXXXXXXXX?text=Hola, me interesa el ${auto.marca} ${auto.modelo}" 
+           target="_blank">
+           Consultar por WhatsApp
+        </a>
+
+        <br><br>
+        <a href="index.html">⬅ Volver</a>
+      `;
+    }
+  </script>
+
 </body>
 </html>
