@@ -1,20 +1,8 @@
 const STORAGE_KEY = "cars";
 
 const form = document.getElementById("carForm");
-const lista = document.getElementById("listaAutos");
+const listaAutos = document.getElementById("listaAutos");
 
-const marcaInput = document.getElementById("marca");
-const modeloInput = document.getElementById("modelo");
-const anioInput = document.getElementById("anio");
-const kmInput = document.getElementById("km");
-const precioInput = document.getElementById("precio");
-const fotoInput = document.getElementById("foto");
-
-let editIndex = null;
-
-// =======================
-// STORAGE
-// =======================
 function getCars() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 }
@@ -23,15 +11,12 @@ function saveCars(cars) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(cars));
 }
 
-// =======================
-// RENDER
-// =======================
 function renderCars() {
   const cars = getCars();
-  lista.innerHTML = "";
+  listaAutos.innerHTML = "";
 
   if (cars.length === 0) {
-    lista.innerHTML = "<p>No hay vehículos cargados</p>";
+    listaAutos.innerHTML = "<p>No hay vehículos cargados.</p>";
     return;
   }
 
@@ -40,71 +25,43 @@ function renderCars() {
     div.style.marginBottom = "10px";
 
     div.innerHTML = `
-      <strong>${car.marca} ${car.modelo}</strong>
+      <strong>${car.marca} ${car.modelo}</strong> 
       (${car.anio}) - ${car.km} km - $${car.precio}
-      <br>
-      <button onclick="editCar(${index})">✏️ Editar</button>
-      <button onclick="deleteCar(${index})">🗑 Eliminar</button>
-      <hr>
+      <button data-index="${index}" class="delete">❌</button>
     `;
 
-    lista.appendChild(div);
+    listaAutos.appendChild(div);
+  });
+
+  document.querySelectorAll(".delete").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const index = btn.dataset.index;
+      const cars = getCars();
+      cars.splice(index, 1);
+      saveCars(cars);
+      renderCars();
+    });
   });
 }
 
-// =======================
-// GUARDAR / EDITAR
-// =======================
 form.addEventListener("submit", e => {
   e.preventDefault();
 
-  const cars = getCars();
-
   const car = {
-    id: editIndex !== null ? cars[editIndex].id : Date.now().toString(),
-    marca: marcaInput.value.trim(),
-    modelo: modeloInput.value.trim(),
-    anio: anioInput.value,
-    km: kmInput.value,
-    precio: precioInput.value,
-    foto: fotoInput.value || ""
+    marca: document.getElementById("marca").value,
+    modelo: document.getElementById("modelo").value,
+    anio: document.getElementById("anio").value,
+    km: document.getElementById("km").value,
+    precio: document.getElementById("precio").value,
+    foto: document.getElementById("foto").value || ""
   };
 
-  if (editIndex !== null) {
-    cars[editIndex] = car;
-    editIndex = null;
-  } else {
-    cars.push(car);
-  }
-
+  const cars = getCars();
+  cars.push(car);
   saveCars(cars);
+
   form.reset();
   renderCars();
 });
 
-// =======================
-// EDITAR / ELIMINAR
-// =======================
-window.editCar = index => {
-  const car = getCars()[index];
-  marcaInput.value = car.marca;
-  modeloInput.value = car.modelo;
-  anioInput.value = car.anio;
-  kmInput.value = car.km;
-  precioInput.value = car.precio;
-  fotoInput.value = car.foto || "";
-  editIndex = index;
-};
-
-window.deleteCar = index => {
-  if (!confirm("¿Eliminar este vehículo?")) return;
-  const cars = getCars();
-  cars.splice(index, 1);
-  saveCars(cars);
-  renderCars();
-};
-
-// =======================
-// INIT
-// =======================
 renderCars();
