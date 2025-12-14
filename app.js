@@ -1,49 +1,56 @@
-const STORAGE_KEY = "cars";
+import { db } from "./firebase.js";
+import {
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-const grid = document.getElementById("carsGrid");
-const chips = document.getElementById("brandChips");
+const carsGrid = document.getElementById("carsGrid");
+const brandChips = document.getElementById("brandChips");
 
-function getCars() {
-  return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+let autos = [];
+let marcaActiva = "TODOS";
+
+async function cargarAutos() {
+  const snap = await getDocs(collection(db, "autos"));
+  autos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  renderMarcas();
+  renderAutos();
 }
 
-function renderBrands(cars) {
-  const brands = ["TODOS", ...new Set(cars.map(c => c.marca))];
-  chips.innerHTML = "";
+function renderMarcas() {
+  const marcas = ["TODOS", ...new Set(autos.map(a => a.marca.toUpperCase()))];
+  brandChips.innerHTML = "";
 
-  brands.forEach(brand => {
+  marcas.forEach(m => {
     const btn = document.createElement("button");
-    btn.textContent = brand;
-    btn.onclick = () => renderCars(brand);
-    chips.appendChild(btn);
-  });
-}
-
-function renderCars(filter = "TODOS") {
-  const cars = getCars();
-  grid.innerHTML = "";
-
-  const filtered = filter === "TODOS"
-    ? cars
-    : cars.filter(c => c.marca === filter);
-
-  filtered.forEach(car => {
-    const card = document.createElement("div");
-    card.className = "card";
-    card.onclick = () => {
-      window.location.href = `detalle.html?id=${car.id}`;
+    btn.className = "chip" + (m === marcaActiva ? " active" : "");
+    btn.textContent = m;
+    btn.onclick = () => {
+      marcaActiva = m;
+      renderAutos();
+      renderMarcas();
     };
-
-    card.innerHTML = `
-      <h3>${car.marca} ${car.modelo}</h3>
-      <p>Año ${car.anio} · ${car.km} km</p>
-      <strong>${car.precio}</strong>
-    `;
-
-    grid.appendChild(card);
+    brandChips.appendChild(btn);
   });
 }
 
-const cars = getCars();
-renderBrands(cars);
-renderCars();
+function renderAutos() {
+  carsGrid.innerHTML = "";
+
+  autos
+    .filter(a => marcaActiva === "TODOS" || a.marca.toUpperCase() === marcaActiva)
+    .forEach(auto => {
+      const card = document.createElement("a");
+      card.className = "card";
+      card.href = `detalle.html?id=${auto.id}`;
+      card.innerHTML = `
+        <img src="${auto.fotos?.[0] || 'https://via.placeholder.com/400x250'}">
+        <h3>${auto.marca} ${auto.modelo}</h3>
+        <p>Año ${auto.anio} • ${auto.km} km</p>
+        <strong>$ ${auto.precio}</strong>
+      `;
+      carsGrid.appendChild(card);
+    });
+}
+
+cargarAutos();
