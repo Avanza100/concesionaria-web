@@ -1,63 +1,81 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const autos = JSON.parse(localStorage.getItem("autos")) || [];
+// ===============================
+// CONFIG
+// ===============================
+const STORAGE_KEY = "autos";
 
-const grid = document.getElementById("carsGrid");
+// ===============================
+// UTILS
+// ===============================
+function getAutos() {
+  return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+}
 
-  if (!grid) {
-    alert("ERROR: No existe el contenedor autosGrid en index.html");
-    return;
-  }
+function saveAutos(autos) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(autos));
+}
+
+// ===============================
+// RENDER MARCAS
+// ===============================
+function renderBrands(autos) {
+  const brandChips = document.getElementById("brandChips");
+  if (!brandChips) return;
+
+  const brands = ["TODOS", ...new Set(autos.map(a => a.marca.toUpperCase()))];
+
+  brandChips.innerHTML = "";
+  brands.forEach(brand => {
+    const btn = document.createElement("button");
+    btn.className = "chip";
+    btn.textContent = brand;
+    btn.onclick = () => renderCars(brand === "TODOS" ? autos : autos.filter(a => a.marca.toUpperCase() === brand));
+    brandChips.appendChild(btn);
+  });
+}
+
+// ===============================
+// RENDER AUTOS
+// ===============================
+function renderCars(autos) {
+  const grid = document.getElementById("carsGrid");
+  if (!grid) return;
+
+  grid.innerHTML = "";
 
   if (autos.length === 0) {
-    grid.innerHTML = "<p>No hay vehículos cargados.</p>";
+    grid.innerHTML = "<p>No hay vehículos cargados</p>";
     return;
   }
 
-  function renderAutos(filtro = "TODOS") {
-    grid.innerHTML = "";
+  autos.forEach((auto, index) => {
+    const card = document.createElement("div");
+    card.className = "card";
 
-    let lista = autos;
+    card.innerHTML = `
+      <h3>${auto.marca} ${auto.modelo}</h3>
+      <p><strong>Año:</strong> ${auto.anio}</p>
+      <p><strong>Kilómetros:</strong> ${auto.km} km</p>
+      <p><strong>Precio:</strong> $${auto.precio}</p>
+      <button onclick="goToDetail(${index})">Ver detalle</button>
+    `;
 
-    if (filtro !== "TODOS") {
-      lista = autos.filter(
-        a => a.marca.toUpperCase() === filtro.toUpperCase()
-      );
-    }
-
-    if (lista.length === 0) {
-      grid.innerHTML = "<p>No hay vehículos para esta marca.</p>";
-      return;
-    }
-
-    lista.forEach(auto => {
-      const card = document.createElement("div");
-      card.className = "card-auto";
-      card.style.cursor = "pointer";
-
-      card.innerHTML = `
-        <h3>${auto.marca} ${auto.modelo}</h3>
-        <p>Año: ${auto.anio}</p>
-        <p>Kilómetros: ${auto.km}</p>
-        <strong>$${auto.precio}</strong>
-      `;
-
-      card.onclick = () => {
-        localStorage.setItem("autoSeleccionado", JSON.stringify(auto));
-        window.location.href = "detalle.html";
-      };
-
-      grid.appendChild(card);
-    });
-  }
-
-  // BOTONES DE MARCA
-  document.querySelectorAll("[data-marca]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      renderAutos(btn.dataset.marca);
-    });
+    grid.appendChild(card);
   });
+}
 
-  // CARGA INICIAL
-  renderAutos();
+// ===============================
+// DETALLE
+// ===============================
+window.goToDetail = function (index) {
+  localStorage.setItem("autoSeleccionado", index);
+  window.location.href = "detalle.html";
+};
+
+// ===============================
+// INIT
+// ===============================
+document.addEventListener("DOMContentLoaded", () => {
+  const autos = getAutos();
+  renderBrands(autos);
+  renderCars(autos);
 });
-
