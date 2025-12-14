@@ -1,39 +1,23 @@
-const STORAGE_KEY = "autos_concesionaria";
+const STORAGE_KEY = "cars";
 
-function getAutoById(id) {
-  const autos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  return autos.find(a => a.id === id);
-}
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
 
-function getIdFromURL() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get("id");
-}
+const container = document.getElementById("detalle");
 
-document.addEventListener("DOMContentLoaded", () => {
-  const cont = document.getElementById("detalle");
-  const id = getIdFromURL();
+const cars = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+const car = cars.find(c => c.id === id);
 
-  if (!id) {
-    cont.innerHTML = "<p>No se recibió ID del vehículo.</p>";
-    return;
-  }
-
-  const auto = getAutoById(id);
-
-  if (!auto) {
-    cont.innerHTML = "<p>No se encontró el vehículo.</p>";
-    return;
-  }
-
-  cont.innerHTML = `
-    <h2>${auto.marca} ${auto.modelo}</h2>
-    <p><strong>Año:</strong> ${auto.anio}</p>
-    <p><strong>Kilómetros:</strong> ${auto.km}</p>
-    <p><strong>Precio:</strong> ${auto.precio}</p>
-    <a class="wa-main" target="_blank"
-       href="https://wa.me/5490000000000?text=Hola,%20me%20interesa%20el%20${auto.marca}%20${auto.modelo}">
-       Consultar por WhatsApp
-    </a>
+if (!car) {
+  container.innerHTML = "<h3>No se encontró el vehículo</h3>";
+} else {
+  container.innerHTML = `
+    <h2>${car.marca} ${car.modelo}</h2>
+    <p>Año: ${car.anio}</p>
+    <p>Kilómetros: ${car.km}</p>
+    <p>Precio: ${car.precio}</p>
+    ${car.foto ? `<img src="${car.foto}" style="max-width:300px">` : ""}
+    <br><br>
+    <a href="index.html">← Volver</a>
   `;
-});
+}
