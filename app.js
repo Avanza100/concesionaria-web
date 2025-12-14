@@ -1,39 +1,25 @@
-const WHATSAPP = "5490000000000";
-
 // CONTENEDORES
 const grid = document.getElementById("carsGrid");
 const chips = document.getElementById("brandChips");
 
-// LEER AUTOS DESDE EL PANEL (localStorage)
+// LEER AUTOS DEL PANEL
 const storedCars = JSON.parse(localStorage.getItem("cars")) || [];
 
-// AUTOS DE EJEMPLO SI NO HAY CARGADOS
+// AUTOS DE EJEMPLO
 const cars = storedCars.length ? storedCars : [
   {
     marca: "Ford",
-    modelo: "Focus",
-    precio: "$11.500.000",
-    foto: "https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?auto=format&fit=crop&w=900&q=60"
-  },
-  {
-    marca: "Toyota",
-    modelo: "Corolla",
-    precio: "$18.000.000",
-    foto: "https://images.unsplash.com/photo-1542362567-b07e54358753?auto=format&fit=crop&w=900&q=60"
-  },
-  {
-    marca: "Fiat",
-    modelo: "Cronos",
-    precio: "$15.500.000",
-    foto: "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=900&q=60"
+    modelo: "Fiesta",
+    precio: "14.000.000",
+    foto: "https://images.unsplash.com/photo-1525609004556-c46c7d6cf023"
   }
 ];
 
-// OBTENER MARCAS ÚNICAS
+// MARCAS
 const marcasUnicas = [...new Set(cars.map(c => c.marca))];
 const marcas = ["Todos", ...marcasUnicas];
 
-// CREAR BOTONES DE FILTRO
+// BOTONES DE MARCA
 chips.innerHTML = "";
 marcas.forEach(marca => {
   const btn = document.createElement("button");
@@ -42,7 +28,7 @@ marcas.forEach(marca => {
   chips.appendChild(btn);
 });
 
-// FUNCIÓN PRINCIPAL DE RENDER
+// RENDER
 function renderCars(marcaSeleccionada) {
   grid.innerHTML = "";
 
@@ -50,20 +36,16 @@ function renderCars(marcaSeleccionada) {
     ? cars
     : cars.filter(c => c.marca === marcaSeleccionada);
 
-  if (!filtrados.length) {
-    grid.innerHTML = "<p>No hay vehículos para esta marca.</p>";
-    return;
-  }
-
   filtrados.forEach(c => {
+    const url =
+      "detalle.html?marca=" + encodeURIComponent(c.marca) +
+      "&modelo=" + encodeURIComponent(c.modelo) +
+      "&precio=" + encodeURIComponent(c.precio) +
+      "&foto=" + encodeURIComponent(c.foto);
+
     grid.innerHTML += `
-      <div class="card" onclick="
-        location.href='detalle.html?marca=${encodeURIComponent(c.marca)}
-        &modelo=${encodeURIComponent(c.modelo)}
-        &precio=${encodeURIComponent(c.precio)}
-        &foto=${encodeURIComponent(c.foto)}'
-      ">
-        <img src="${c.foto}" alt="${c.marca}">
+      <div class="card" onclick="window.location.href='${url}'">
+        <img src="${c.foto}">
         <h3>${c.marca} ${c.modelo}</h3>
         <strong>${c.precio}</strong>
       </div>
@@ -71,5 +53,5 @@ function renderCars(marcaSeleccionada) {
   });
 }
 
-// MOSTRAR TODO AL CARGAR
+// CARGA INICIAL
 renderCars("Todos");
