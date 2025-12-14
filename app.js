@@ -47,7 +47,8 @@ function renderAutos() {
       card.className = "card";
       card.href = `detalle.html?id=${index}`;
       card.innerHTML = `
-        <img src="${img}">
+      <img src="${img}" data-zoom="true">
+
         <h3>${auto.marca} ${auto.modelo}</h3>
         <p>Año ${auto.anio} • ${auto.km} km</p>
         <strong>$ ${auto.precio}</strong>
@@ -121,5 +122,6 @@ zoomOverlay.addEventListener("click", e => {
     zoomOverlay.style.display = "none";
   }
 });
+
 
 
