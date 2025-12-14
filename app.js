@@ -1,43 +1,39 @@
-const grid = document.getElementById("carsGrid");
-const chips = document.getElementById("brandChips");
+const autos = JSON.parse(localStorage.getItem("autos")) || [];
 
-const cars = JSON.parse(localStorage.getItem("cars")) || [];
+const grid = document.getElementById("autosGrid");
+const botonesMarca = document.querySelectorAll(".btn-marca");
 
-const marcas = ["Todos", ...new Set(cars.map(c => c.marca))];
-
-chips.innerHTML = "";
-marcas.forEach(m => {
-  const b = document.createElement("button");
-  b.textContent = m.toUpperCase();
-  b.onclick = () => render(m);
-  chips.appendChild(b);
-});
-
-function render(marca) {
+function renderAutos(filtro = "TODOS") {
   grid.innerHTML = "";
 
-  const filtrados = marca === "Todos"
-    ? cars
-    : cars.filter(c => c.marca === marca);
+  const filtrados =
+    filtro === "TODOS"
+      ? autos
+      : autos.filter(a => a.marca.toUpperCase() === filtro);
 
-  filtrados.forEach(c => {
-    const url =
-      "detalle.html?marca=" + encodeURIComponent(c.marca) +
-      "&modelo=" + encodeURIComponent(c.modelo) +
-      "&anio=" + encodeURIComponent(c.anio) +
-      "&km=" + encodeURIComponent(c.km) +
-      "&precio=" + encodeURIComponent(c.precio) +
-      "&foto=" + encodeURIComponent(c.foto);
-
-    grid.innerHTML += `
-      <div class="card" onclick="location.href='${url}'">
-        <img src="${c.foto}">
-        <h3>${c.marca} ${c.modelo}</h3>
-        <p>Año ${c.anio} • ${c.km} km</p>
-        <strong>${c.precio}</strong>
-      </div>
+  filtrados.forEach((auto, index) => {
+    const card = document.createElement("div");
+    card.className = "card-auto";
+    card.innerHTML = `
+      <h3>${auto.marca} ${auto.modelo}</h3>
+      <p>Año ${auto.anio}</p>
+      <p>${auto.km.toLocaleString()} km</p>
+      <strong>$${auto.precio.toLocaleString()}</strong>
     `;
+
+    card.onclick = () => {
+      localStorage.setItem("autoSeleccionado", JSON.stringify(auto));
+      window.location.href = "detalle.html";
+    };
+
+    grid.appendChild(card);
   });
 }
 
-render("Todos");
+botonesMarca.forEach(btn => {
+  btn.addEventListener("click", () => {
+    renderAutos(btn.dataset.marca);
+  });
+});
+
+renderAutos();
