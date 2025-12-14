@@ -1,20 +1,22 @@
-const params = new URLSearchParams(window.location.search);
+const p = new URLSearchParams(location.search);
 
-const marca = params.get("marca");
-const modelo = params.get("modelo");
-const precio = params.get("precio");
-const foto = params.get("foto");
+const marca = p.get("marca");
+const modelo = p.get("modelo");
+const anio = p.get("anio");
+const km = p.get("km");
+const precio = p.get("precio");
+const foto = p.get("foto");
 
 document.getElementById("foto").src = foto;
 document.getElementById("titulo").innerText = `${marca} ${modelo}`;
 document.getElementById("precio").innerText = precio;
 
 document.getElementById("descripcion").innerText =
-  "Vehículo en excelente estado. Listo para transferir. Consulte disponibilidad.";
+  `Año ${anio} • ${km} km • Excelente estado • Listo para transferir`;
 
-const mensaje = encodeURIComponent(
-  `Hola, me interesa el ${marca} ${modelo} (${precio}). ¿Sigue disponible?`
+const msg = encodeURIComponent(
+  `Hola, me interesa el ${marca} ${modelo} (${anio}, ${km} km) por ${precio}`
 );
 
 document.getElementById("whatsapp").href =
-  `https://wa.me/5490000000000?text=${mensaje}`;
+  `https://wa.me/5490000000000?text=${msg}`;
