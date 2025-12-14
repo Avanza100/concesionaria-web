@@ -1,74 +1,75 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Detalle del vehículo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Estilos -->
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    .detalle-wrap {
-      max-width: 900px;
-      margin: 40px auto;
-      background: #1f2a44;
-      padding: 30px;
-      border-radius: 12px;
-      color: #fff;
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      background:#0b1220;
+      color:#fff;
     }
-
-    .detalle-wrap h2 {
-      margin-bottom: 10px;
-      font-size: 28px;
+    .wrap{
+      max-width:1100px;
+      margin:20px auto;
+      padding:15px;
     }
-
-    .detalle-wrap p {
-      margin: 6px 0;
-      font-size: 16px;
+    a{
+      color:#60a5fa;
+      text-decoration:none;
+      font-weight:600;
     }
-
-    .detalle-wrap img {
-      margin-top: 15px;
-      max-width: 100%;
-      border-radius: 10px;
+    .gallery{
+      display:flex;
+      gap:10px;
+      overflow-x:auto;
+      margin-bottom:20px;
     }
-
-    .btn-volver {
-      display: inline-block;
-      margin-bottom: 20px;
-      background: #22c55e;
-      color: #000;
-      padding: 8px 14px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
+    .gallery img{
+      height:260px;
+      border-radius:12px;
+      object-fit:cover;
+      flex-shrink:0;
     }
-
-    .no-car {
-      text-align: center;
-      padding: 40px;
-      font-size: 18px;
-      opacity: 0.9;
+    .info{
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.08);
+      padding:16px;
+      border-radius:12px;
+    }
+    .info h2{
+      margin-top:0;
+    }
+    .price{
+      font-size:22px;
+      font-weight:800;
+      margin:10px 0;
+    }
+    .wa{
+      display:inline-block;
+      margin-top:15px;
+      background:#22c55e;
+      color:#0b1220;
+      padding:14px 18px;
+      border-radius:12px;
+      font-weight:800;
     }
   </style>
 </head>
 
 <body>
 
-  <main class="detalle-wrap">
+  <div class="wrap">
+    <a href="index.html">← Volver</a>
 
-    <a href="index.html" class="btn-volver">← Volver</a>
+    <div id="gallery" class="gallery"></div>
 
-    <!-- ACÁ SE INYECTA EL AUTO -->
-    <div id="detalle">
-      <div class="no-car">Cargando vehículo…</div>
-    </div>
+    <div id="info" class="info"></div>
+  </div>
 
-  </main>
-
-  <!-- SCRIPT DEL DETALLE -->
   <script src="detalle.js"></script>
-
 </body>
 </html>
