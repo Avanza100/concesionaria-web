@@ -13,7 +13,7 @@ const fotoInput = document.getElementById("foto");
 let editIndex = null;
 
 // =======================
-// UTILIDADES
+// STORAGE
 // =======================
 function getCars() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
@@ -24,7 +24,7 @@ function saveCars(cars) {
 }
 
 // =======================
-// RENDER LISTA
+// RENDER AUTOS
 // =======================
 function renderCars() {
   const cars = getCars();
@@ -36,19 +36,19 @@ function renderCars() {
   }
 
   cars.forEach((car, index) => {
-    const div = document.createElement("div");
-    div.style.marginBottom = "10px";
+    const item = document.createElement("div");
+    item.style.marginBottom = "12px";
 
-    div.innerHTML = `
+    item.innerHTML = `
       <strong>${car.marca} ${car.modelo}</strong>
-      (${car.anio}) - ${car.km} km - $${car.precio}
+      (${car.anio}) – ${car.km} km – $${car.precio}
       <br>
       <button onclick="editCar(${index})">✏️ Editar</button>
       <button onclick="deleteCar(${index})">🗑 Eliminar</button>
       <hr>
     `;
 
-    lista.appendChild(div);
+    lista.appendChild(item);
   });
 }
 
@@ -60,20 +60,20 @@ form.addEventListener("submit", (e) => {
 
   const cars = getCars();
 
-  const carData = {
+  const car = {
     marca: marcaInput.value.trim(),
     modelo: modeloInput.value.trim(),
     anio: Number(anioInput.value),
     km: Number(kmInput.value),
     precio: Number(precioInput.value),
-    foto: fotoInput.value.trim() || ""
+    foto: fotoInput.value.trim()
   };
 
   if (editIndex !== null) {
-    cars[editIndex] = carData;
+    cars[editIndex] = car;
     editIndex = null;
   } else {
-    cars.push(carData);
+    cars.push(car);
   }
 
   saveCars(cars);
@@ -85,8 +85,7 @@ form.addEventListener("submit", (e) => {
 // EDITAR
 // =======================
 window.editCar = function (index) {
-  const cars = getCars();
-  const car = cars[index];
+  const car = getCars()[index];
 
   marcaInput.value = car.marca;
   modeloInput.value = car.modelo;
