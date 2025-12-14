@@ -58,3 +58,22 @@ function renderAutos() {
 }
 
 init();
+document.addEventListener("click", e => {
+  if (!e.target.closest(".carousel button")) return;
+
+  const btn = e.target;
+  const carousel = btn.closest(".carousel");
+  const images = carousel.querySelectorAll("img");
+  let index = [...images].findIndex(img => img.classList.contains("active"));
+
+  images[index].classList.remove("active");
+
+  if (btn.classList.contains("next")) {
+    index = (index + 1) % images.length;
+  } else {
+    index = (index - 1 + images.length) % images.length;
+  }
+
+  images[index].classList.add("active");
+});
+
