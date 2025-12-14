@@ -122,12 +122,16 @@ window.editCar = id => {
 // =======================
 // ELIMINAR
 // =======================
-window.deleteCar = id => {
-  if (!confirm("¿Eliminar este vehículo?")) return;
-  const cars = getCars().filter(c => c.id !== id);
+window.deleteCar = function (id) {
+  if (!confirm("¿Seguro que querés eliminar este vehículo?")) return;
+
+  let cars = getCars();
+  cars = cars.filter(c => String(c.id) !== String(id));
+
   saveCars(cars);
   renderCars();
 };
+
 
 // =======================
 renderCars();
