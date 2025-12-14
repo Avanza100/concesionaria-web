@@ -1,64 +1,51 @@
-const STORAGE_KEY = "cars";
+const STORAGE_KEY = "autos_concesionaria";
 
-const chipsContainer = document.getElementById("brandChips");
-const grid = document.getElementById("carsGrid");
-
-let activeBrand = "Todos";
-
-function getCars() {
+function getAutos() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 }
 
-function renderChips(cars) {
-  const brands = ["Todos", ...new Set(cars.map(c => c.marca))];
-  chipsContainer.innerHTML = "";
-
-  brands.forEach(brand => {
-    const btn = document.createElement("button");
-    btn.textContent = brand;
-    btn.className = brand === activeBrand ? "active" : "";
-
-    btn.onclick = () => {
-      activeBrand = brand;
-      renderCars();
-    };
-
-    chipsContainer.appendChild(btn);
-  });
+function saveAutos(autos) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(autos));
 }
 
-function renderCars() {
-  const cars = getCars();
+function renderAutos(filtro = "TODOS") {
+  const grid = document.getElementById("carsGrid");
+  const autos = getAutos();
+
   grid.innerHTML = "";
 
-  const filtered =
-    activeBrand === "Todos"
-      ? cars
-      : cars.filter(c => c.marca === activeBrand);
+  autos
+    .filter(a => filtro === "TODOS" || a.marca === filtro)
+    .forEach(auto => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <h3>${auto.marca} ${auto.modelo}</h3>
+        <p>Año ${auto.anio} · ${auto.km} km</p>
+        <strong>${auto.precio}</strong>
+      `;
+      card.onclick = () => {
+        window.location.href = `detalle.html?id=${auto.id}`;
+      };
+      grid.appendChild(card);
+    });
+}
 
-  if (filtered.length === 0) {
-    grid.innerHTML = "<p>No hay vehículos disponibles</p>";
-    return;
-  }
+function renderMarcas() {
+  const cont = document.getElementById("brandChips");
+  const autos = getAutos();
+  const marcas = ["TODOS", ...new Set(autos.map(a => a.marca))];
 
-  filtered.forEach(car => {
-    const card = document.createElement("div");
-    card.className = "card";
-
-    card.innerHTML = `
-      <h3>${car.marca} ${car.modelo}</h3>
-      <p>Año ${car.anio} · ${car.km} km</p>
-      <strong>${car.precio}</strong>
-    `;
-
-    card.onclick = () => {
-      window.location.href = `detalle.html?id=${car.id}`;
-    };
-
-    grid.appendChild(card);
+  cont.innerHTML = "";
+  marcas.forEach(m => {
+    const btn = document.createElement("button");
+    btn.textContent = m;
+    btn.onclick = () => renderAutos(m);
+    cont.appendChild(btn);
   });
 }
 
-const cars = getCars();
-renderChips(cars);
-renderCars();
+document.addEventListener("DOMContentLoaded", () => {
+  renderMarcas();
+  renderAutos();
+});
