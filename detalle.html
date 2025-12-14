@@ -3,36 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <title>Detalle del vehículo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <div class="detalle-container" id="detalle"></div>
+  <header class="hero">
+    <div class="wrap hero-inner">
+      <h1>Detalle del vehículo</h1>
+      <a href="index.html" class="wa-main">⬅ Volver</a>
+    </div>
+  </header>
 
-  <script>
-    const auto = JSON.parse(localStorage.getItem("autoSeleccionado"));
-    const contenedor = document.getElementById("detalle");
+  <main class="wrap">
+    <!-- ACÁ SE INYECTA TODO CON JS -->
+    <div id="detalle"></div>
+  </main>
 
-    if (!auto) {
-      contenedor.innerHTML = "<p>No se encontró el vehículo</p>";
-    } else {
-      contenedor.innerHTML = `
-        <h1>${auto.marca} ${auto.modelo}</h1>
-        <p><strong>Año:</strong> ${auto.anio}</p>
-        <p><strong>Kilómetros:</strong> ${auto.km.toLocaleString()} km</p>
-        <p><strong>Precio:</strong> $${auto.precio.toLocaleString()}</p>
+  <footer class="foot">
+    <div class="wrap footer-box">
+      <span>© Concesionaria Oficial</span>
+      <span>Atención personalizada · Garantía · Asesoramiento</span>
+    </div>
+  </footer>
 
-        <a class="btn-whatsapp" 
-           href="https://wa.me/549XXXXXXXXXX?text=Hola, me interesa el ${auto.marca} ${auto.modelo}" 
-           target="_blank">
-           Consultar por WhatsApp
-        </a>
-
-        <br><br>
-        <a href="index.html">⬅ Volver</a>
-      `;
-    }
-  </script>
-
+  <!-- MUY IMPORTANTE -->
+  <script src="detalle.js"></script>
 </body>
 </html>
