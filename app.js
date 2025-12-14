@@ -77,3 +77,26 @@ document.addEventListener("click", e => {
   images[index].classList.add("active");
 });
 
+const zoomOverlay = document.getElementById("zoomOverlay");
+const zoomImg = document.getElementById("zoomImg");
+const zoomClose = document.getElementById("zoomClose");
+
+// Abrir zoom
+document.addEventListener("click", e => {
+  if (e.target.closest(".carousel img")) {
+    zoomImg.src = e.target.src;
+    zoomOverlay.style.display = "flex";
+  }
+});
+
+// Cerrar zoom
+zoomClose.addEventListener("click", () => {
+  zoomOverlay.style.display = "none";
+});
+
+zoomOverlay.addEventListener("click", e => {
+  if (e.target === zoomOverlay) {
+    zoomOverlay.style.display = "none";
+  }
+});
+
