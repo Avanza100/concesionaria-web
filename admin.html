@@ -3,51 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <title>Panel Admin - Concesionaria</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
 
-<!-- LOGIN -->
-<div id="loginBox" class="wrap" style="max-width:420px;margin-top:60px">
-  <div class="card">
-    <h2>Acceso al panel</h2>
-    <p>Ingresá tus credenciales</p>
-    <input id="user" placeholder="Usuario" /><br><br>
-    <input id="pass" type="password" placeholder="Contraseña" /><br><br>
-    <button onclick="login()">Ingresar</button>
-  </div>
-</div>
+<h2>Panel de administración</h2>
 
-<!-- PANEL -->
-<div id="panel" style="display:none">
+<form id="carForm">
+  <label>Marca</label>
+  <input type="text" id="marca" required>
 
-<header class="top">
-  <div class="wrap header-box">
-    <div class="logo">ADMIN</div>
-    <div class="hero-text">
-      <h1>Panel de carga de vehículos</h1>
-      <p>Agregar, editar y eliminar autos</p>
-    </div>
-  </div>
-</header>
+  <label>Modelo</label>
+  <input type="text" id="modelo" required>
 
-<main class="wrap">
+  <label>Año</label>
+  <input type="number" id="anio" required>
 
-  <section class="card">
-    <h2>Agregar vehículo</h2>
-    <input id="marca" placeholder="Marca (Ford)" /><br><br>
-    <input id="modelo" placeholder="Modelo (Focus)" /><br><br>
-    <input id="precio" placeholder="Precio ($11.500.000)" /><br><br>
-    <button onclick="addCar()">Guardar vehículo</button>
-  </section>
+  <label>Kilómetros</label>
+  <input type="number" id="km" required>
 
-  <section class="grid" id="adminCars"></section>
+  <label>Precio</label>
+  <input type="text" id="precio" required>
 
-</main>
+  <label>URL de foto</label>
+  <input type="text" id="foto" required>
 
-</div>
+  <button type="submit">Guardar vehículo</button>
+</form>
+
+<hr>
+
+<h3>Autos cargados</h3>
+<div id="listaAutos"></div>
 
 <script src="admin.js"></script>
 </body>
