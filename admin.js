@@ -1,20 +1,20 @@
 const STORAGE_KEY = "cars";
 
 const form = document.getElementById("carForm");
-const list = document.getElementById("carsList");
+const lista = document.getElementById("carsList");
 
 const marcaInput = document.getElementById("marca");
 const modeloInput = document.getElementById("modelo");
 const anioInput = document.getElementById("anio");
 const kmInput = document.getElementById("km");
 const precioInput = document.getElementById("precio");
-const fotoInput = document.getElementById("foto");
+const fotosInput = document.getElementById("fotos");
 
-let editIndex = null;
+let editingId = null;
 
-// ========================
-// UTILIDADES
-// ========================
+// =======================
+// STORAGE
+// =======================
 function getCars() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 }
@@ -23,57 +23,78 @@ function saveCars(cars) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(cars));
 }
 
-// ========================
+// =======================
 // RENDER PANEL
-// ========================
+// =======================
 function renderCars() {
   const cars = getCars();
-  list.innerHTML = "";
+  lista.innerHTML = "";
 
   if (cars.length === 0) {
-    list.innerHTML = "<p>No hay vehículos cargados.</p>";
+    lista.innerHTML = "<p>No hay vehículos cargados</p>";
     return;
   }
 
-  cars.forEach((car, index) => {
+  cars.forEach(car => {
     const div = document.createElement("div");
-    div.style.marginBottom = "10px";
+    div.style.marginBottom = "14px";
+
+    const thumbs = (car.fotos || [])
+      .slice(0, 3)
+      .map(f => `<img src="${f}" style="width:60px;border-radius:6px;margin-right:4px">`)
+      .join("");
 
     div.innerHTML = `
       <strong>${car.marca} ${car.modelo}</strong>
       (${car.anio}) - ${car.km} km - $${car.precio}
+      <br>${thumbs}
       <br>
-      <button onclick="editCar(${index})">✏️ Editar</button>
-      <button onclick="deleteCar(${index})">❌ Eliminar</button>
+      <button onclick="editCar('${car.id}')">✏️ Editar</button>
+      <button onclick="deleteCar('${car.id}')">🗑 Eliminar</button>
       <hr>
     `;
 
-    list.appendChild(div);
+    lista.appendChild(div);
   });
 }
 
-// ========================
+// =======================
 // GUARDAR / EDITAR
-// ========================
-form.addEventListener("submit", (e) => {
+// =======================
+form.addEventListener("submit", e => {
   e.preventDefault();
 
   const cars = getCars();
 
-  const carData = {
-    marca: marcaInput.value.trim(),
-    modelo: modeloInput.value.trim(),
-    anio: anioInput.value,
-    km: kmInput.value,
-    precio: precioInput.value,
-    foto: fotoInput.value.trim()
-  };
+  const fotosArray = fotosInput.value
+    .split(",")
+    .map(f => f.trim())
+    .filter(Boolean);
 
-  if (editIndex !== null) {
-    cars[editIndex] = carData;
-    editIndex = null;
+  if (editingId) {
+    const i = cars.findIndex(c => c.id === editingId);
+    if (i !== -1) {
+      cars[i] = {
+        ...cars[i],
+        marca: marcaInput.value,
+        modelo: modeloInput.value,
+        anio: anioInput.value,
+        km: kmInput.value,
+        precio: precioInput.value,
+        fotos: fotosArray
+      };
+    }
+    editingId = null;
   } else {
-    cars.push(carData);
+    cars.push({
+      id: Date.now().toString(),
+      marca: marcaInput.value,
+      modelo: modeloInput.value,
+      anio: anioInput.value,
+      km: kmInput.value,
+      precio: precioInput.value,
+      fotos: fotosArray
+    });
   }
 
   saveCars(cars);
@@ -81,33 +102,32 @@ form.addEventListener("submit", (e) => {
   renderCars();
 });
 
-// ========================
+// =======================
 // EDITAR
-// ========================
-window.editCar = function (index) {
-  const car = getCars()[index];
+// =======================
+window.editCar = id => {
+  const car = getCars().find(c => c.id === id);
+  if (!car) return;
 
   marcaInput.value = car.marca;
   modeloInput.value = car.modelo;
   anioInput.value = car.anio;
   kmInput.value = car.km;
   precioInput.value = car.precio;
-  fotoInput.value = car.foto || "";
+  fotosInput.value = (car.fotos || []).join(", ");
 
-  editIndex = index;
+  editingId = id;
 };
 
-// ========================
+// =======================
 // ELIMINAR
-// ========================
-window.deleteCar = function (index) {
+// =======================
+window.deleteCar = id => {
   if (!confirm("¿Eliminar este vehículo?")) return;
-
-  const cars = getCars();
-  cars.splice(index, 1);
+  const cars = getCars().filter(c => c.id !== id);
   saveCars(cars);
   renderCars();
 };
 
-// ========================
+// =======================
 renderCars();
