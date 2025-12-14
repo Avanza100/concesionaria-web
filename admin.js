@@ -1,5 +1,4 @@
 const STORAGE_KEY = "cars";
-const OLD_KEYS = ["autos", "autos_concesionaria", "vehiculos", "cars_v2"];
 
 const form = document.getElementById("carForm");
 const lista = document.getElementById("listaAutos");
@@ -11,33 +10,7 @@ const kmInput = document.getElementById("km");
 const precioInput = document.getElementById("precio");
 const fotoInput = document.getElementById("foto");
 
-// =======================
-// MIGRACIÓN AUTOMÁTICA
-// =======================
-function migrateCars() {
-  let cars = JSON.parse(localStorage.getItem(STORAGE_KEY));
-
-  if (!cars || cars.length === 0) {
-    for (const key of OLD_KEYS) {
-      const data = JSON.parse(localStorage.getItem(key));
-      if (Array.isArray(data) && data.length > 0) {
-        cars = data.map(c => ({
-          id: c.id || Date.now().toString() + Math.random(),
-          marca: c.marca,
-          modelo: c.modelo,
-          anio: c.anio,
-          km: c.km,
-          precio: c.precio,
-          foto: c.foto || ""
-        }));
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(cars));
-        break;
-      }
-    }
-  }
-
-  return cars || [];
-}
+let editIndex = null;
 
 // =======================
 // STORAGE
@@ -82,8 +55,6 @@ function renderCars() {
 // =======================
 // GUARDAR / EDITAR
 // =======================
-let editIndex = null;
-
 form.addEventListener("submit", e => {
   e.preventDefault();
 
@@ -136,5 +107,4 @@ window.deleteCar = index => {
 // =======================
 // INIT
 // =======================
-migrateCars();
 renderCars();
