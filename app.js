@@ -40,13 +40,13 @@ function renderAutos() {
     .filter(a => marcaActiva === "TODOS" || a.marca.toUpperCase() === marcaActiva)
     .forEach((auto, index) => {
 
-      // 👇 IMAGEN SEGURA (primera foto)
+      // Imagen principal segura
       let img = "https://via.placeholder.com/400x250?text=Sin+foto";
       if (auto.fotos && auto.fotos.length > 0) {
         img = auto.fotos[0];
       }
 
-      // 👇 CANTIDAD DE FOTOS
+      // Cantidad de fotos
       const fotosCount = auto.fotos ? auto.fotos.length : 0;
 
       const card = document.createElement("a");
@@ -64,30 +64,4 @@ function renderAutos() {
     });
 }
 
-
-  autos
-    .filter(a => marcaActiva === "TODOS" || a.marca.toUpperCase() === marcaActiva)
-    .forEach((auto, index) => {
-
-      // 👇 IMAGEN SEGURA (primera foto)
-      let img = "https://via.placeholder.com/400x250?text=Sin+foto";
-      if (auto.fotos && auto.fotos.length > 0) {
-        img = auto.fotos[0];
-      }
-
-      const card = document.createElement("a");
-      card.className = "card";
-      card.href = `detalle.html?id=${index}`;
-      card.innerHTML = `
-        <img src="${img}">
-        <h3>${auto.marca} ${auto.modelo}</h3>
-        <p>Año ${auto.anio} • ${auto.km} km</p>
-        <strong>$ ${auto.precio}</strong>
-      `;
-
-      carsGrid.appendChild(card);
-    });
-}
-
 init();
-
