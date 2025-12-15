@@ -219,5 +219,25 @@ body {
   cursor: pointer;
   font-weight: bold;
 }
+/* BADGE CANTIDAD DE FOTOS */
+.card {
+  position: relative;
+}
+
+.photo-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(0,0,0,0.75);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 
 
