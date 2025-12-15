@@ -39,3 +39,23 @@ Precio: ${car.precio}`
     </a>
   `;
 }
+const zoomOverlay = document.getElementById("zoomOverlay");
+const zoomImg = document.getElementById("zoomImg");
+const zoomClose = document.getElementById("zoomClose");
+
+// abrir zoom al tocar cualquier foto del detalle
+document.getElementById("gallery").addEventListener("click", (e) => {
+  if (e.target.tagName === "IMG") {
+    zoomImg.src = e.target.src;
+    zoomOverlay.style.display = "flex";
+  }
+});
+
+// cerrar
+zoomClose.addEventListener("click", () => {
+  zoomOverlay.style.display = "none";
+});
+zoomOverlay.addEventListener("click", (e) => {
+  if (e.target === zoomOverlay) zoomOverlay.style.display = "none";
+});
+
