@@ -29,6 +29,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // Obtener ID del URL
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
 
@@ -61,6 +62,13 @@
         <p>Año ${auto.anio} • ${auto.km} km</p>
         <strong>$ ${auto.precio}</strong>
         <div>${fotosHTML}</div>
+        
+        <!-- WhatsApp personalizado -->
+        <a class="wa-card"
+          target="_blank"
+          href="https://wa.me/543755541075?text=Hola,%20me%20interesa%20el%20${auto.marca}%20${auto.modelo}%20${auto.anio}%20con%20${auto.km}%20km%20a%20un%20precio%20de%20$${auto.precio}.">
+          Consultar por WhatsApp
+        </a>
       `;
     }
 
