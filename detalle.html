@@ -2,99 +2,70 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Detalle del vehículo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <style>
-    body{
-      margin:0;
-      font-family: Arial, sans-serif;
-      background:#0b1220;
-      color:#fff;
-    }
-    .wrap{
-      max-width:1100px;
-      margin:20px auto;
-      padding:15px;
-    }
-    a{
-      color:#60a5fa;
-      text-decoration:none;
-      font-weight:600;
-    }
-    .gallery{
-      display:flex;
-      gap:10px;
-      overflow-x:auto;
-      margin-bottom:20px;
-    }
-    .gallery img{
-      height:260px;
-      border-radius:12px;
-      object-fit:cover;
-      flex-shrink:0;
-    }
-    .info{
-      background:rgba(255,255,255,0.06);
-      border:1px solid rgba(255,255,255,0.08);
-      padding:16px;
-      border-radius:12px;
-    }
-    .info h2{
-      margin-top:0;
-    }
-    .price{
-      font-size:22px;
-      font-weight:800;
-      margin:10px 0;
-    }
-    .wa{
-      display:inline-block;
-      margin-top:15px;
-      background:#22c55e;
-      color:#0b1220;
-      padding:14px 18px;
-      border-radius:12px;
-      font-weight:800;
-    }
-    /* ZOOM EN DETALLE */
-.zoom-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.9);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-.zoom-overlay img {
-  max-width: 95%;
-  max-height: 95%;
-  border-radius: 10px;
-}
-.zoom-overlay .close {
-  position: absolute;
-  top: 18px;
-  right: 22px;
-  font-size: 28px;
-  color: #fff;
-  cursor: pointer;
-}
-#gallery img { cursor: zoom-in; }
-
-  </style>
+  <title>Detalle del vehículo</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
 
   <div class="wrap">
-    <a href="index.html">← Volver</a>
-
-    <div id="gallery" class="gallery"></div>
-
-    <div id="info" class="info"></div>
+    <div id="detalleAuto">Cargando vehículo...</div>
   </div>
 
-  <script src="detalle.js"></script>
+  <!-- 🔥 ESTE SCRIPT VA ABAJO DE TODO -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCaCQPEO_Z5R-hGTsDaL_FJrLfWHLxH1w0",
+      authDomain: "concesionaria-web-3f94b.firebaseapp.com",
+      projectId: "concesionaria-web-3f94b",
+      storageBucket: "concesionaria-web-3f94b.appspot.com",
+      messagingSenderId: "472999337096",
+      appId: "1:472999337096:web:0b1e90bc7684af007a133d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    const contenedor = document.getElementById("detalleAuto");
+
+    async function cargarDetalle() {
+      if (!id) {
+        contenedor.innerHTML = "<p>Vehículo no encontrado</p>";
+        return;
+      }
+
+      const ref = doc(db, "autos", id);
+      const snap = await getDoc(ref);
+
+      if (!snap.exists()) {
+        contenedor.innerHTML = "<p>Vehículo no encontrado</p>";
+        return;
+      }
+
+      const auto = snap.data();
+
+      const fotosHTML =
+        Array.isArray(auto.fotos) && auto.fotos.length > 0
+          ? auto.fotos.map(f => `<img src="${f}" style="width:100%;margin-bottom:10px;border-radius:8px;">`).join("")
+          : "<p>Sin fotos</p>";
+
+      contenedor.innerHTML = `
+        <a href="index.html">← Volver</a>
+        <h2>${auto.marca} ${auto.modelo}</h2>
+        <p>Año ${auto.anio} • ${auto.km} km</p>
+        <strong>$ ${auto.precio}</strong>
+        <div>${fotosHTML}</div>
+      `;
+    }
+
+    cargarDetalle();
+  </script>
+
 </body>
 </html>
