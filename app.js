@@ -29,17 +29,36 @@ let marcaActiva = "TODOS";
 // 🔄 Cargar autos desde Firebase
 async function cargarAutos() {
   const snapshot = await getDocs(collection(db, "autos"));
-  autos = snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }));
+
+  autos = snapshot.docs.map(doc => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      marca: data.marca || "OTROS",
+      modelo: data.modelo || "",
+      anio: data.anio || "",
+      km: data.km || "",
+      precio: data.precio || "",
+      fotos: Array.isArray(data.fotos) ? data.fotos : []
+    };
+  });
+
   renderMarcas();
   renderAutos();
 }
 
-// 🏷️ Marcas
+// 🏷️ Marcas (PROTEGIDO)
 function renderMarcas() {
-  const marcas = ["TODOS", ...new Set(autos.map(a => a.marca.toUpperCase()))];
+  const marcasUnicas = new Set();
+
+  autos.forEach(a => {
+    if (a.marca && typeof a.marca === "string") {
+      marcasUnicas.add(a.marca.toUpperCase());
+    }
+  });
+
+  const marcas = ["TODOS", ...marcasUnicas];
+
   brandChips.innerHTML = "";
 
   marcas.forEach(marca => {
@@ -60,7 +79,9 @@ function renderAutos() {
   autos
     .filter(a => marcaActiva === "TODOS" || a.marca.toUpperCase() === marcaActiva)
     .forEach(auto => {
-      const img = auto.fotos?.[0] || "https://via.placeholder.com/400x250?text=Sin+foto";
+      const img = auto.fotos.length > 0
+        ? auto.fotos[0]
+        : "https://via.placeholder.com/400x250?text=Sin+foto";
 
       const card = document.createElement("a");
       card.className = "card";
