@@ -32,10 +32,16 @@ async function cargarAutos() {
 
   autos = snapshot.docs.map(doc => {
     const data = doc.data();
+
+    const marcaSegura =
+      typeof data.marca === "string" && data.marca.trim() !== ""
+        ? data.marca.trim()
+        : "OTROS";
+
     return {
       id: doc.id,
-      marca: data.marca || "OTROS",
-      modelo: data.modelo || "",
+      marca: marcaSegura,
+      modelo: typeof data.modelo === "string" ? data.modelo : "",
       anio: data.anio || "",
       km: data.km || "",
       precio: data.precio || "",
@@ -47,17 +53,15 @@ async function cargarAutos() {
   renderAutos();
 }
 
-// 🏷️ Marcas (PROTEGIDO)
+// 🏷️ Marcas (100% seguro)
 function renderMarcas() {
-  const marcasUnicas = new Set();
+  const marcasSet = new Set();
 
-  autos.forEach(a => {
-    if (a.marca && typeof a.marca === "string") {
-      marcasUnicas.add(a.marca.toUpperCase());
-    }
+  autos.forEach(auto => {
+    marcasSet.add(auto.marca.toUpperCase());
   });
 
-  const marcas = ["TODOS", ...marcasUnicas];
+  const marcas = ["TODOS", ...Array.from(marcasSet)];
 
   brandChips.innerHTML = "";
 
@@ -72,22 +76,26 @@ function renderMarcas() {
   });
 }
 
-// 🚗 Autos
+// 🚗 Render autos
 function renderAutos() {
   carsGrid.innerHTML = "";
 
   autos
-    .filter(a => marcaActiva === "TODOS" || a.marca.toUpperCase() === marcaActiva)
+    .filter(auto =>
+      marcaActiva === "TODOS" ||
+      auto.marca.toUpperCase() === marcaActiva
+    )
     .forEach(auto => {
-      const img = auto.fotos.length > 0
-        ? auto.fotos[0]
-        : "https://via.placeholder.com/400x250?text=Sin+foto";
+      const img =
+        auto.fotos.length > 0 && auto.fotos[0].startsWith("http")
+          ? auto.fotos[0]
+          : "https://via.placeholder.com/400x250?text=Sin+foto";
 
       const card = document.createElement("a");
       card.className = "card";
       card.href = `detalle.html?id=${auto.id}`;
       card.innerHTML = `
-        <img src="${img}">
+        <img src="${img}" loading="lazy">
         <h3>${auto.marca} ${auto.modelo}</h3>
         <p>Año ${auto.anio} • ${auto.km} km</p>
         <strong>$ ${auto.precio}</strong>
