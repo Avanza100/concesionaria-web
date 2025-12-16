@@ -1,12 +1,7 @@
-// 🔥 Firebase
+// Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// 🔧 Config Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCaCQPEO_Z5R-hGTsDaL_FJrLfWHLxH1w0",
   authDomain: "concesionaria-web-3f94b.firebaseapp.com",
@@ -19,91 +14,73 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 📦 DOM
 const carsGrid = document.getElementById("carsGrid");
 const brandChips = document.getElementById("brandChips");
 
 let autos = [];
 let marcaActiva = "TODOS";
 
-// 🔄 Cargar autos desde Firebase
 async function cargarAutos() {
-  const snapshot = await getDocs(collection(db, "autos"));
+  try {
+    const snap = await getDocs(collection(db, "autos"));
 
-  autos = snapshot.docs.map(doc => {
-    const data = doc.data();
+    autos = snap.docs.map(doc => {
+      const d = doc.data();
 
-    const marcaSegura =
-      typeof data.marca === "string" && data.marca.trim() !== ""
-        ? data.marca.trim()
-        : "OTROS";
+      return {
+        id: doc.id,
+        marca: (d.marca ?? "OTROS").toString().trim(),
+        modelo: (d.modelo ?? "").toString(),
+        anio: d.anio ?? "",
+        km: d.km ?? "",
+        precio: d.precio ?? "",
+        fotos: Array.isArray(d.fotos) ? d.fotos : []
+      };
+    });
 
-    return {
-      id: doc.id,
-      marca: marcaSegura,
-      modelo: typeof data.modelo === "string" ? data.modelo : "",
-      anio: data.anio || "",
-      km: data.km || "",
-      precio: data.precio || "",
-      fotos: Array.isArray(data.fotos) ? data.fotos : []
-    };
-  });
+    renderMarcas();
+    renderAutos();
 
-  renderMarcas();
-  renderAutos();
+  } catch (e) {
+    console.error("ERROR CARGANDO AUTOS:", e);
+  }
 }
 
-// 🏷️ Marcas (100% seguro)
 function renderMarcas() {
-  const marcasSet = new Set();
-
-  autos.forEach(auto => {
-    marcasSet.add(auto.marca.toUpperCase());
-  });
-
-  const marcas = ["TODOS", ...Array.from(marcasSet)];
+  const set = new Set();
+  autos.forEach(a => set.add(a.marca.toUpperCase()));
 
   brandChips.innerHTML = "";
-
-  marcas.forEach(marca => {
-    const btn = document.createElement("button");
-    btn.textContent = marca;
-    btn.onclick = () => {
-      marcaActiva = marca;
+  ["TODOS", ...set].forEach(m => {
+    const b = document.createElement("button");
+    b.textContent = m;
+    b.onclick = () => {
+      marcaActiva = m;
       renderAutos();
     };
-    brandChips.appendChild(btn);
+    brandChips.appendChild(b);
   });
 }
 
-// 🚗 Render autos
 function renderAutos() {
   carsGrid.innerHTML = "";
 
   autos
-    .filter(auto =>
-      marcaActiva === "TODOS" ||
-      auto.marca.toUpperCase() === marcaActiva
-    )
-    .forEach(auto => {
-      const img =
-        auto.fotos.length > 0 && auto.fotos[0].startsWith("http")
-          ? auto.fotos[0]
-          : "https://via.placeholder.com/400x250?text=Sin+foto";
+    .filter(a => marcaActiva === "TODOS" || a.marca.toUpperCase() === marcaActiva)
+    .forEach(a => {
+      const img = a.fotos[0]?.startsWith("http")
+        ? a.fotos[0]
+        : "https://via.placeholder.com/400x250?text=Sin+foto";
 
-      const card = document.createElement("a");
-      card.className = "card";
-      card.href = `detalle.html?id=${auto.id}`;
-      card.innerHTML = `
-        <img src="${img}" loading="lazy">
-        <h3>${auto.marca} ${auto.modelo}</h3>
-        <p>Año ${auto.anio} • ${auto.km} km</p>
-        <strong>$ ${auto.precio}</strong>
+      carsGrid.innerHTML += `
+        <a class="card" href="detalle.html?id=${a.id}">
+          <img src="${img}" loading="lazy">
+          <h3>${a.marca} ${a.modelo}</h3>
+          <p>Año ${a.anio} • ${a.km} km</p>
+          <strong>$ ${a.precio}</strong>
+        </a>
       `;
-
-      carsGrid.appendChild(card);
     });
 }
 
-// 🚀 Iniciar
 cargarAutos();
